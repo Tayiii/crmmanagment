@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid">
+  <section>
+    <h2>Паспорт</h2>
+    <p><strong>{{ item.number }}</strong> · {{ item.type }}</p>
+    <p>{{ item.description or 'Без описания' }}</p>
+    <p>
+      <span class="badge">{{ item.status }}</span>
+      <span class="badge">{{ item.priority }}</span>
+      {% if item.is_blocked %}<span class="badge danger">blocked</span>{% endif %}
+    </p>
+    <p>Срок: {{ item.due_date or '—' }}</p>
+    <p>Причина блокировки: {{ item.block_reason or '—' }}</p>
+    <p>Причина перенаправления: {{ item.redirect_reason or '—' }}</p>
+  </section>
+
+  <section>
+    <h2>Ответственность</h2>
+    <p>Инициатор: {{ users[item.initiator_id].full_name if item.initiator_id in users else item.initiator_id }}</p>
+    <p>Постановщик: {{ users[item.assigner_id].full_name if item.assigner_id in users else item.assigner_id }}</p>
+    <p>Владелец процесса: {{ users[item.process_owner_id].full_name if item.process_owner_id in users else item.process_owner_id }}</p>
+    <p>Основной исполнитель: {{ users[item.main_executor_id].full_name if item.main_executor_id in users else item.main_executor_id }}</p>
+  </section>
+</div>
+
+<div class="grid">
+  <section>
+    <h2>Участники</h2>
+    <ul>
+      {% for participant in item.participants %}
+        <li>{{ users[participant.user_id].full_name if participant.user_id in users else participant.user_id }} — {{ participant.role }} / {{ participant.status }}</li>
+      {% endfor %}
+    </ul>
+    <form method="post" action="/workitems/{{ item.id }}/participants">
+      <select name="user_id">{% for user in users.values() %}<option value="{{ user.id }}">{{ user.full_name }}</option>{% endfor %}</select>
+      <select name="role"><option value="co_executor">co_executor</option><option value="observer">observer</option></select>
+      <input type="number" name="order" value="0">
+      <button type="submit">Добавить участника</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Состояние</h2>
+    <form method="post" action="/workitems/{{ item.id }}/status">
+      <select name="status">{% for status in statuses %}<option value="{{ status }}">{{ status }}</option>{% endfor %}</select>
+      <input name="reason" placeholder="Причина изменения">
+      <button type="submit">Сменить статус</button>
+    </form>
+    <form method="post" action="/workitems/{{ item.id }}/block">
+      <select name="is_blocked"><option value="true">Блокировать</option><option value="false">Разблокировать</option></select>
+      <input name="reason" placeholder="Причина блокировки/снятия">
+      <button type="submit">Обновить блокировку</button>
+    </form>
+    <form method="post" action="/workitems/{{ item.id }}/redirect">
+      <select name="main_executor_id">{% for user in users.values() %}<option value="{{ user.id }}">{{ user.full_name }}</option>{% endfor %}</select>
+      <input name="reason" placeholder="Причина перенаправления" required>
+      <button type="submit">Перенаправить</button>
+    </form>
+  </section>
+</div>
+
+<div class="grid">
+  <section>
+    <h2>История</h2>
+    <ul>
+      {% for entry in item.history|sort(attribute='timestamp', reverse=True) %}
+        <li>{{ entry.timestamp }} — {{ entry.action }} ({{ entry.old_value or '—' }} → {{ entry.new_value or '—' }}) {{ entry.reason or '' }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section>
+    <h2>Комментарии</h2>
+    <ul>
+      {% for comment in item.comments|sort(attribute='created_at', reverse=True) %}
+        <li>{{ comment.created_at }} — {{ users[comment.user_id].full_name if comment.user_id in users else comment.user_id }}: {{ comment.text }}</li>
+      {% endfor %}
+    </ul>
+    <form method="post" action="/workitems/{{ item.id }}/comments">
+      <textarea name="text" placeholder="Комментарий" required></textarea>
+      <button type="submit">Добавить комментарий</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Файлы</h2>
+    <ul>
+      {% for file in item.files|sort(attribute='created_at', reverse=True) %}
+        <li>{{ file.created_at }} — {{ file.filename }}</li>
+      {% endfor %}
+    </ul>
+    <form method="post" action="/workitems/{{ item.id }}/files" enctype="multipart/form-data">
+      <input type="file" name="file" required>
+      <button type="submit">Загрузить файл</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

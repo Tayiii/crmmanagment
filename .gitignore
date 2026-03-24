@@ -1,0 +1,13 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+
+# Local database/uploads
+app.db
+uploads/
+
+# Archives should not be committed
+*.zip

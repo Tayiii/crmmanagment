@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="grid">
+  {% for key, title in [("overdue", "Просрочено"), ("today", "Сегодня"), ("week", "Неделя"), ("no_due_date", "Без срока")] %}
+  <section>
+    <h2>{{ title }}</h2>
+    {% if buckets[key] %}
+      <ul>
+      {% for item in buckets[key] %}
+        <li>
+          <a href="/workitems/{{ item.id }}">{{ item.number }} — {{ item.title }}</a><br>
+          <span class="badge">{{ item.type }}</span>
+          <span class="badge">{{ item.status }}</span>
+          <span class="badge">{{ item.priority }}</span>
+          <span class="muted">срок: {{ item.due_date or '—' }}</span>
+        </li>
+      {% endfor %}
+      </ul>
+    {% else %}
+      <p class="muted">Нет элементов.</p>
+    {% endif %}
+  </section>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{{ title or 'WorkItems' }}</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; background: #f4f6f8; color: #1e293b; }
+    header, section, aside { background: white; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+    .muted { color: #64748b; }
+    .badge { display:inline-block; background:#e2e8f0; border-radius:999px; padding:.2rem .65rem; margin-right:.4rem; }
+    .danger { color:#b91c1c; }
+    form { display:grid; gap:.5rem; margin-top:.75rem; }
+    input, select, textarea, button { padding:.6rem; border:1px solid #cbd5e1; border-radius:8px; }
+    button { background:#0f172a; color:white; cursor:pointer; }
+    a { color:#1d4ed8; text-decoration:none; }
+    ul { padding-left: 1.1rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>{{ title or 'WorkItems' }}</h1>
+    <nav><a href="/workitems/">Список</a> · <a href="/workitems/new">Создать</a></nav>
+  </header>
+  {% block content %}{% endblock %}
+</body>
+</html>
