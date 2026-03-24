@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<section>
+  <h2>Новый WorkItem</h2>
+  <form method="post" action="/workitems/">
+    <select name="type">{% for value in types %}<option value="{{ value }}">{{ value }}</option>{% endfor %}</select>
+    <input name="title" placeholder="Заголовок" required>
+    <textarea name="description" placeholder="Описание"></textarea>
+    <label>Владелец процесса
+      <select name="process_owner_id">{% for user in users %}<option value="{{ user.id }}">{{ user.full_name }}</option>{% endfor %}</select>
+    </label>
+    <label>Основной исполнитель
+      <select name="main_executor_id">{% for user in users %}<option value="{{ user.id }}">{{ user.full_name }}</option>{% endfor %}</select>
+    </label>
+    <label>Постановщик
+      <select name="assigner_id"><option value="">Автотекущий</option>{% for user in users %}<option value="{{ user.id }}">{{ user.full_name }}</option>{% endfor %}</select>
+    </label>
+    <select name="priority">{% for value in priorities %}<option value="{{ value }}">{{ value }}</option>{% endfor %}</select>
+    <select name="status">{% for value in statuses %}<option value="{{ value }}">{{ value }}</option>{% endfor %}</select>
+    <input type="date" name="due_date">
+    <button type="submit">Создать</button>
+  </form>
+</section>
+{% endblock %}
